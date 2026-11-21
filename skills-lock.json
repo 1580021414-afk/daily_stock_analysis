@@ -1,0 +1,103 @@
+{
+  "version": 2,
+  "skills": {
+    "chunk": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/chunk/skills/chunk/SKILL.md",
+      "computedHash": "afd5d4a957749d63411beb660d511804da9d2dcb758fe5f2e44de4ee3ce427a4"
+    },
+    "chunk-review": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/chunk/skills/chunk-review/SKILL.md",
+      "computedHash": "42b3ae622fd2f0a9ebe22ff3b390c0ee2d20948402fb600a6692c9c8d022fda4"
+    },
+    "chunk-sidecar": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/chunk/skills/chunk-sidecar/SKILL.md",
+      "computedHash": "b59c3e005b3326ba6b84d6e9d03df57ea5f9c036e3ac5d219dc374b028a7fb29"
+    },
+    "chunk-sidecar-setup": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/chunk/skills/chunk-sidecar-setup/SKILL.md",
+      "computedHash": "0dcfac7d685992151750e09b0f41e566d279fab215b9f20e2f9b2dc02724225b"
+    },
+    "chunk-testing-gaps": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/chunk/skills/chunk-testing-gaps/SKILL.md",
+      "computedHash": "710a7b2c2dc7d0362d3808342355bc28bc13d3abf2c67de8681c8b4dbdd3b4a4"
+    },
+    "circleci-builds": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/builds/SKILL.md",
+      "computedHash": "3d8e72d48752e3ade6ab0564593252778491994475f447f79a0455378bd4c447"
+    },
+    "circleci-cli": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/cli/SKILL.md",
+      "computedHash": "27138fefabcd0a9b453352b61be42bd1ccc3a418705dd4dad647fb07f097810d"
+    },
+    "circleci-config": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/config/SKILL.md",
+      "computedHash": "901b0a8dff0a733a4756493ca74e358d2e31cbd6fb4f63b45673cf9219465cc7"
+    },
+    "circleci-deploy-setup": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/deploy-setup/SKILL.md",
+      "computedHash": "7bb6b84110428960c435b61954423a4f606ccb08a4c149ca2d1131baa57df39a"
+    },
+    "circleci-smarter-testing-debugging": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/smarter-testing-debugging/SKILL.md",
+      "computedHash": "8386c46d04994590731b6d8ecc1f775ff816f78c3ee5ecceaf430ac4ea4a41f4"
+    },
+    "circleci-smarter-testing-onboarding": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/smarter-testing-onboarding/SKILL.md",
+      "computedHash": "6627823d7c632f3feccb289864928da17646eadb9373d6788b2ca8ce2a9194f7"
+    },
+    "circleci-smarter-testing-run": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/smarter-testing-run/SKILL.md",
+      "computedHash": "94bbb347fd8b3fbc1046d832999743701a190662c30d99673ea228923124ad69"
+    },
+    "debug-ci-failures": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/debug-ci-failures/SKILL.md",
+      "computedHash": "c64289ac27e9811803ad48938a386fa828912ad43c8040149db643cb7e006ac2"
+    },
+    "onboarding": {
+      "source": "CircleCI-Public/skills",
+      "commit": "da055a8fe50e3ea8b4ec66630a2629bbb7a30567",
+      "sourceType": "github",
+      "skillPath": "plugins/circleci/skills/onboard/SKILL.md",
+      "computedHash": "1bb766f2b32b5118b050f3bc7a9a7fd65269424e96280098675bdfce29afcaa8"
+    }
+  }
+}

@@ -1,0 +1,234 @@
+---
+name: circleci-cli
+description: Day-to-day CircleCI from the terminal with the circleci CLI — authenticate, validate config before you commit, watch the run your push triggered, review pipeline/workflow/job status, print a failure report for your latest failed run in one command, read job logs and failed tests, list a project's flaky tests, list or download every artifact in a run in one command, and rerun/cancel/trigger. Use when a developer asks to authenticate CLI access, check their build or pipeline status, watch a run after pushing, see why CI failed, read job output/logs, find failing tests, list flaky tests, download build outputs such as a coverage report, rerun failed jobs, cancel or re-trigger a run, validate a config change locally, or look up a project's environment variables, contexts, triggers or pipeline definitions. For first-time project connection / pipeline-definition setup use the onboarding skill; for the diagnose-and-fix methodology on a failing build use circleci-builds.
+---
+
+# CircleCI day-to-day developer workflow (CLI)
+
+The everyday loop: change config → commit/push → watch the run → read failures → rerun.
+Almost every command **infers the project from the current git remote and the branch from
+your checked-out branch**, so from inside a repo you rarely pass `--project`/`--branch`.
+
+Every data-returning command takes `--json`, and `--jq '<expr>'` filters it without a
+separate `jq`; human output is markdown. Without a terminal the CLI skips the pager, drops
+color, and fails fast naming the missing flag instead of prompting (for example
+`--value is required in non-interactive mode.`), so there is nothing to set up defensively.
+
+## Preflight and signing in
+
+Run `circleci version`, then `circleci auth me`. It reads `$CIRCLE_TOKEN` (which wins over
+a stored token) and confirms which user it resolves to, so it doubles as the auth check. It
+fails with `No CircleCI API token found` when there is no usable token.
+
+To sign in, run `circleci auth login`. **Don't ask the user for an API token**: the OAuth
+flow needs no secret from them, and pasting tokens into a chat is worse for them than a
+browser round-trip. Without a terminal it opens the authorize page in the user's browser,
+prints the same URL to stderr, then **blocks for up to 5 minutes** waiting for approval:
+
+- Run it in the background, or with a timeout well above your default, not in a foreground
+  call that gives up after a minute or two.
+- Tell the user to approve the request in their browser, and pass along the printed URL in
+  case the window never came to the front. They are watching you, not your tool output.
+- Once they have approved, confirm with `circleci auth me`.
+
+`--no-browser` prints the URL without opening anything. `CI` and `CIRCLE_NO_INTERACTIVE`
+also suppress the browser, since there is no one there to use it; set `CIRCLE_TOKEN` in
+those environments instead.
+
+## 1. Before you commit — validate locally (fast feedback)
+
+```bash
+circleci config validate                       # lint .circleci/config.yml (default path); use -c <path> or - for stdin
+circleci config process .circleci/config.yml   # expand orbs/params → the final compiled config
+circleci config process .circleci/config.yml --pipeline-parameters params.yml   # process with pipeline params
+```
+- `validate --org gh/<org>` is needed to resolve **private orbs**.
+- `-n/--next` previews upcoming (potentially breaking) config changes.
+- Write or improve a config: `circleci config generate [path]` detects the stack and prints
+  instructions for you to follow, ending in a validate loop. It writes nothing; `--template`
+  writes a starter config instead.
+
+Handy git hook — block a push when the config is invalid (`.git/hooks/pre-push`):
+```bash
+#!/bin/sh
+circleci config validate || { echo "Fix .circleci/config.yml before pushing"; exit 1; }
+```
+
+Adding a new job or setup step (install Node, Docker, the AWS CLI)? Check for a Function first:
+```bash
+circleci function list           # every published Function
+circleci function get <name>     # its arguments and the config lines to add
+circleci function add <name>     # add it to .circleci/config.yml (--dry-run previews the change)
+```
+Use these for new configs and new setup steps only. Leave a working pipeline's orbs alone unless the user asks.
+
+## 2. Commit, push, and watch the run it triggers
+
+```bash
+git push                                        # your trigger fires a run
+circleci run watch                              # watch the latest run on the current branch; blocks to completion
+circleci run watch --sha "$(git rev-parse HEAD)"  # match the run for THIS commit (polls up to 2m for it to appear)
+circleci run watch --failfast                   # bail the moment any job fails
+```
+`run watch` exit codes make it scriptable: **0** all workflows passed · **1** something
+failed · **6** cancelled · **7** config rejected · **8** timed out (`--timeout`, default
+30m). Chain it: `git push && circleci run watch --sha "$(git rev-parse HEAD)"`.
+
+## 3. Review your pipelines / runs
+
+```bash
+circleci run list                    # recent runs for this project (--limit, -b <branch>, -B current branch)
+circleci run list -B --status success --limit 1   # the last successful run on this branch (without -B: any branch)
+circleci run get                     # latest run on current branch: workflows → jobs, with status
+circleci run get <run-id>            # a specific run
+circleci my runs                     # YOUR recent runs across every project you can access
+circleci run open                    # open the current branch's run in the browser
+```
+`run get` shows the run → workflow → job tree. Add `--json` to pull IDs for drilling in
+(`workflows[].id`, `workflows[].jobs[].id`) — those UUIDs feed the commands below.
+`--status` (on `run list` and `run artifacts`) takes one of `success`, `failed`, `failing`,
+`running`, `queued`, `on_hold`, `canceled`, `error`, `not_run` or `unauthorized`: `success`,
+not the `succeeded` that text output shows.
+
+## 4. Drill into a failure
+
+Start with the failure report: one command that prints every failed step's output,
+grouped by workflow and job, then the commands to run next. Drill down further only
+if it doesn't answer the question.
+
+```bash
+circleci my runs --failure-report              # START HERE: your newest failed run in any project (one still running counts)
+circleci run get --failure-report              # same report for the latest run on this branch, or pass <run-id>
+circleci run get --json --jq '.workflows[].jobs[] | select(.current_outcome=="failed") | {name,id}'   # failing jobs + UUIDs
+circleci job output list <job-id>              # per-step logs (rendered; --tail N, default last 200 lines/step)
+circleci job output get  <job-id> --step-num <N>   # full output of one step (--execution <i> for parallel runs)
+circleci job get <job-id>                      # job metadata (status, timing, parallelism)
+circleci testresult list <job-id>              # FAILED tests only by default (--all, --filter result=…, --sort, --limit)
+circleci testresult flaky                      # the project's flaky tests, most-flaked first: is a failing test a known flake?
+```
+Parallel jobs: `job output list --execution <index>` targets one shard.
+
+## 5. Get a run's artifacts
+
+Coverage reports, test reports and other build outputs are artifacts. `run artifacts` lists
+every job's artifacts in a run in one call.
+
+```bash
+circleci run artifacts                          # latest run on this branch, grouped by workflow / job
+circleci run artifacts --status success         # the last successful run (a given run: run artifacts <run-id>)
+circleci run artifacts --status success -o ./artifacts   # download into ./artifacts/<workflow>/<job>/
+circleci run artifacts --status success --json --jq '.workflows[].jobs[] | {job: .name} + (.artifacts[] | {path, url}) | select(.path | test("coverage"))'   # coverage files + URLs
+circleci job artifact <job-id>                  # one job only; -o <dir> to download
+```
+- Text output shows paths; `--json` adds each artifact's `url`
+  (`workflows[].jobs[].artifacts[]`).
+- A job with no artifacts lists as empty, not an error. A run with none prints
+  `No artifacts found in run <id>.` and exits 0 (`--json` still prints the run, with empty
+  `artifacts[]`). Expired artifacts look the same as none.
+- Without a run ID it only looks back 90 days, and exits 5 when no run there matches. For an
+  older run, find its ID and pass it.
+
+## 6. Act on a run
+
+```bash
+circleci workflow rerun <workflow-id>               # rerun the whole workflow from scratch
+circleci workflow rerun <workflow-id> --from-failed # rerun only the failed jobs (workflow IDs come from `run get`)
+circleci run cancel <run-number-or-id>              # stop a run (-f to skip the prompt)
+circleci run trigger                                # manually trigger a run (current project/branch)
+circleci run trigger -b <branch> --parameter deploy=true --parameter tier=2   # trigger with params (repeatable)
+circleci workflow cancel <workflow-id>              # cancel a single workflow
+```
+To debug interactively (SSH into a job), rerun **with SSH** from the web app — there is no
+CLI flag for it; `circleci run open` gets you there fast.
+
+## Troubleshooting — where to get each piece of information
+
+| You want to know… | Command |
+|---|---|
+| Did my push build? Which run? | `circleci run watch --sha "$(git rev-parse HEAD)"` / `circleci run list -B` |
+| Overall status of the latest run | `circleci run get` |
+| Why my latest build failed | `circleci my runs --failure-report` (this branch: `circleci run get --failure-report`) |
+| Which workflow/job failed | `circleci run get --json --jq '.workflows[].jobs[] \| select(.current_outcome=="failed")'` |
+| Why a step failed (logs) | `circleci job output list <job-id>` → `job output get <job-id> --step-num N` |
+| Which tests failed | `circleci testresult list <job-id>` |
+| Which tests are flaky in this project | `circleci testresult flaky` (`--json`: one test per line, with `times_flaked`) |
+| The last successful run | `circleci run list -B --status success --limit 1` |
+| Build outputs / reports (coverage, test reports) | `circleci run artifacts --status success -o ./artifacts` (one job: `circleci job artifact <job-id>`) |
+| Config problem before pushing | `circleci config validate` / `circleci config process` |
+| Config error in the UI vs local | validate with `--org` to match private-orb resolution |
+| Everything I triggered lately | `circleci my runs` |
+| Open it in the browser | `circleci run open`, `circleci workflow open`, `circleci job open` |
+| Env var names on the project | `circleci envvar list` |
+| Contexts in the org, and their secrets | `circleci context list`, `circleci context secret list <context>` |
+| Pipeline definitions, and their triggers | `circleci pipeline list`, then `circleci project trigger list --pipeline-definition-id <id>` |
+| Anything not listed here | [`references/api-coverage.md`](references/api-coverage.md) maps each v3 endpoint to its command |
+| CircleCI feature/config syntax question | use the **circleci-config** skill / docs MCP rather than guessing |
+
+## Gotchas
+- Commands default to the **git remote's project and your current branch** — `cd` into the
+  repo. Override with `--project gh/<org>/<repo>` and `-b <branch>` when outside it (note:
+  `run get`/`run open`/`run artifacts` default the branch to `main` when `--project` is
+  set, not your checkout).
+- `run watch --sha` **polls up to 2 minutes** for the run to appear — expected right after a push.
+- Logs, tests, and `job artifact` key off the **job UUID** (from `run get --json` /
+  `workflow get`), not the job number. `run artifacts` takes a run instead.
+- `run cancel` takes a run number *or* UUID; pass `--project` when cancelling by number.
+- `circleci api <path>` resolves relative to `/api/v3`; a path starting with `api` is sent as
+  given. Reach for it only when no command covers what you need:
+  [`references/api-coverage.md`](references/api-coverage.md) says which endpoints have one.
+  `{project-id}` and `{org-id}` in the path are filled in from the git remote.
+- One execution of a pipeline is a **run** (`run list`, `run get`). `circleci pipeline`
+  manages pipeline *definitions*, the config and checkout sources a run executes, so
+  `pipeline list` is not where runs live.
+- Don't confuse `run trigger` (this skill: fire a run on the inferred project/branch) with
+  `pipeline run --definition-id …` (definition-targeted; see the onboarding skill).
+- Verify a real run + `job output`/`testresult` — a green status alone doesn't prove the
+  step did what you intended.
+
+## Guardrails
+
+- **Read before you mutate.** Prefer read-only commands (`run get`/`list`, `job output`,
+  `testresult`, `run artifacts`) before `rerun`/`trigger`/`cancel`, and confirm the
+  organization/project scope before mutating pipeline state.
+- **Never print raw secret values** from environment variables or tokens. Pipe secrets from
+  `op read`/stdin — never pass them as command-line args (they leak into shell history and logs).
+- **Don't invent commands.** Verify with `circleci help` first; if a subcommand isn't
+  listed, don't use it. There is no top-level `trigger`: firing a run is `run trigger`, and
+  `project trigger` manages the triggers attached to a definition. On older builds that lack
+  `api`, read cloud job logs from the CircleCI app/UI or connected CircleCI MCP tooling.
+- **If auth/permissions fail, report the exact scope gap** and safest remediation
+  (`circleci auth login`, refresh permissions in User Settings) rather than retrying blindly.
+
+## Telling CircleCI when the CLI falls short
+
+`circleci feedback` sends a report to the team that builds the CLI. Send one when the CLI
+itself got in the way of the task:
+
+- An error that looks like CircleCI's fault: a 5xx, or anything the CLI follows with
+  `If this looks like a CircleCI problem, report it: circleci feedback …`.
+- A missing capability: no command covers what you needed, even after checking
+  `circleci help` and [`references/api-coverage.md`](references/api-coverage.md).
+- Confusing output: you misread it, or it contradicted what you found elsewhere.
+
+```bash
+circleci feedback "run get --json listed no jobs for a run the web app shows with three" --tool "run get"
+```
+
+- Say what you were trying to do, what you ran and what happened, quoted as one argument.
+  `--tool` names the command it's about.
+- The report carries the user's CircleCI identity, so describe the CLI's behavior in your
+  own words and keep secrets, env var values and log excerpts out of it.
+- Problems in the user's config or code, or a missing token or permission, belong to the
+  user, not in a report.
+- Send one report per problem, then carry on with the task. If `feedback` fails, or
+  `circleci help` doesn't list it, move on without it.
+
+## Report back
+
+When you finish, summarize:
+
+1. Commands run and their purpose.
+2. Key outputs — pipeline/workflow/job ids, status, failing step.
+3. Actions taken (rerun/trigger/validate) and why.
+4. Remaining blockers and the next recommended CLI command.
+5. Any feedback you sent to CircleCI, and what it said.

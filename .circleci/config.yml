@@ -1,0 +1,30 @@
+version: 2.1
+
+jobs:
+  backend-test:
+    docker:
+      - image: cimg/python:3.11
+    parallelism: 2
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            pip install flake8 pytest
+      - run:
+          name: Python syntax check
+          command: |
+            python -m py_compile main.py src/config.py src/auth.py src/analyzer.py src/notification.py
+            python -m py_compile src/storage.py src/scheduler.py src/search_service.py
+            python -m py_compile src/market_analyzer.py src/stock_analyzer.py
+            python -m py_compile data_provider/*.py
+      - run:
+          name: Run test suite
+          command: circleci testsuite run "backend"
+
+workflows:
+  ci:
+    jobs:
+      - backend-test
