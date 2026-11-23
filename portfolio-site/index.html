@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alex Chen · 产品设计师 & 前端开发者</title>
+  <meta name="description" content="Alex Chen 的个人作品集 —— 专注用户体验、界面设计与前端工程。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="logo" href="#top">AC<span>.</span></a>
+    <nav class="nav-links">
+      <a href="#about">关于</a>
+      <a href="#work">作品</a>
+      <a href="#skills">技能</a>
+      <a href="#contact">联系</a>
+    </nav>
+    <a class="nav-cta" href="#contact">聊聊合作</a>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-text">
+        <p class="eyebrow"><span class="dot"></span> 现居上海 · 可远程协作</p>
+        <h1>把复杂的问题<br />设计成<span class="grad">简单的体验</span>。</h1>
+        <p class="hero-sub">
+          我是 Alex Chen，一名产品设计师兼前端开发者。过去七年里，我帮助团队
+          把模糊的想法打磨成清晰、好用、让人愿意反复打开的产品。
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#work">查看作品 <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#contact">联系我</a>
+        </div>
+        <dl class="stats">
+          <div><dt>7+</dt><dd>年产品经验</dd></div>
+          <div><dt>28</dt><dd>上线项目</dd></div>
+          <div><dt>12</dt><dd>合作团队</dd></div>
+        </dl>
+      </div>
+      <div class="hero-portrait">
+        <div class="portrait-frame">
+          <img
+            src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=confident%20young%20asian%20product%20designer%20portrait%2C%20warm%20studio%20lighting%2C%20minimal%20neutral%20background%2C%20professional%20editorial%20photography%2C%20soft%20shadows%2C%20high%20detail&image_size=portrait_4_3"
+            alt="Alex Chen 的肖像照" loading="eager" />
+        </div>
+        <div class="portrait-tag">
+          <span class="pulse"></span> 正在接受新项目
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about">
+      <div class="section-head">
+        <span class="section-index">01</span>
+        <h2>关于我</h2>
+      </div>
+      <div class="about-grid">
+        <p class="about-lead">
+          我相信好的设计不是装饰，而是<strong>降低理解成本</strong>。从用户研究到像素级还原，
+          我习惯把整条链路握在手里。
+        </p>
+        <p class="about-body">
+          曾在 SaaS、金融科技与创作者工具领域工作，擅长从 0 到 1 搭建设计系统、
+          推动跨职能协作，并用前端代码验证设计方案的真实手感。工作之外，我喜欢
+          拍胶片、做咖啡，以及研究怎样让界面少一点噪音。
+        </p>
+      </div>
+    </section>
+
+    <section id="work" class="section work">
+      <div class="section-head">
+        <span class="section-index">02</span>
+        <h2>精选作品</h2>
+      </div>
+      <div class="cards">
+        <article class="card card--wide">
+          <div class="card-media">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=clean%20modern%20fintech%20dashboard%20ui%20on%20laptop%20screen%2C%20dark%20mode%20interface%2C%20charts%20and%20cards%2C%20minimal%20desk%20setup%2C%20soft%20blue%20light&image_size=landscape_4_3" alt="Nova 财务仪表盘界面" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>金融科技</span><span>2025</span></div>
+            <h3>Nova · 一站式财务仪表盘</h3>
+            <p>为自由职业者重新设计收支管理体验，把 8 个割裂模块整合进单一视图，任务完成率提升 42%。</p>
+            <ul class="tags"><li>产品设计</li><li>设计系统</li><li>React</li></ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-media">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sleek%20mobile%20app%20screens%20mockup%20for%20creative%20writing%20tool%2C%20floating%20phones%2C%20soft%20pastel%20gradient%20background%2C%20editorial%20minimal%20style&image_size=landscape_4_3" alt="Inkwell 写作应用界面" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>创作者工具</span><span>2024</span></div>
+            <h3>Inkwell · 沉浸式写作应用</h3>
+            <p>用极简的写作界面帮助作者进入心流，付费转化在改版后翻了一倍。</p>
+            <ul class="tags"><li>交互设计</li><li>移动端</li></ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-media">
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20design%20system%20component%20library%20on%20large%20monitor%2C%20color%20swatches%20and%20ui%20components%2C%20studio%20workspace%2C%20clean%20minimal%20aesthetic&image_size=landscape_4_3" alt="设计系统组件库" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <div class="card-meta"><span>设计系统</span><span>2024</span></div>
+            <h3>Atlas · 企业级设计系统</h3>
+            <p>从零构建覆盖 60+ 组件的设计系统，让 5 条产品线的交付速度加快 35%。</p>
+            <ul class="tags"><li>设计系统</li><li>组件库</li><li>文档</li></ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="skills" class="section skills">
+      <div class="section-head">
+        <span class="section-index">03</span>
+        <h2>能力地图</h2>
+      </div>
+      <div class="skill-groups">
+        <div class="skill-group">
+          <h3>设计</h3>
+          <ul>
+            <li>用户研究与可用性测试</li>
+            <li>信息架构与线框</li>
+            <li>高保真界面与动效</li>
+            <li>设计系统与规范</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>工程</h3>
+          <ul>
+            <li>HTML / CSS / JavaScript</li>
+            <li>React / TypeScript</li>
+            <li>响应式与无障碍</li>
+            <li>性能优化</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <h3>协作</h3>
+          <ul>
+            <li>跨职能项目管理</li>
+            <li>设计冲刺主持</li>
+            <li>产品策略与需求梳理</li>
+            <li>团队导师与评审</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact">
+      <div class="contact-card">
+        <p class="eyebrow"><span class="dot"></span> 一起做点有意思的事</p>
+        <h2>有想法？<br />我们聊聊。</h2>
+        <p class="contact-sub">无论是产品设计、前端实现还是长期合作，我都很乐意听听你的计划。</p>
+        <div class="contact-actions">
+          <a class="btn btn-primary" href="mailto:hello@alexchen.design">hello@alexchen.design</a>
+          <a class="btn btn-ghost" href="#top">回到顶部 ↑</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> Alex Chen</span>
+    <span>用设计与代码手工打造</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
